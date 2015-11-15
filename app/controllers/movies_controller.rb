@@ -24,6 +24,7 @@ class MoviesController < ApplicationController
     elsif params[:sort]
       session_sort = false
       sort_order = params[:sort]
+      session[:sort] = params[:sort]
     end
     
     if session[:ratings] && !params[:ratings]
@@ -32,7 +33,7 @@ class MoviesController < ApplicationController
     elsif params[:ratings]
       session_ratings = false
       selected_ratings = params[:ratings]
-      
+      session[:ratings] = params[:ratings]
     end
     
     if session_ratings || session_sort
