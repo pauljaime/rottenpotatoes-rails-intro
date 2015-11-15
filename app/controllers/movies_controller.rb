@@ -15,40 +15,51 @@ class MoviesController < ApplicationController
     
     sort_order = nil
     selected_ratings = nil
-    
-    if params[:sort] != nil
-      session[:sort] = params[:sort]
-      sort_order = params[:sort]
-    elsif session[:sort] != nil
-      params[:sort] = session[:sort]
+    session_sort = false
+    session_ratings = false
+
+    if session[:sort] && !params[:sort]
+      session_sort = true
       sort_order = session[:sort]
+    elsif params[:sort]
+      session_sort = false
+      sort_order = params[:sort]
     end
     
-    if params[:ratings] != nil
-      session[:ratings] = params[:ratings]
-      selected_ratings = params[:ratings]
-    elsif session[:ratings] != nil
-      params[:ratings] = session[:ratings]
+    if session[:ratings] && !params[:ratings]
+      session_ratings = true
       selected_ratings = session[:ratings]
+    elsif params[:ratings]
+      session_ratings = false
+      selected_ratings = params[:ratings]
+      
+    end
+    
+    if session_ratings || session_sort
+      flash.keep
+      redirect_to movies_path(sort: sort_order, ratings: selected_ratings) and return
     end
     
     if sort_order != nil && selected_ratings != nil
-        @movies = Movie.where(:rating => selected_ratings.keys).order(sort_order).all 
+      @movies = Movie.where(:rating => selected_ratings.keys).order(sort_order).all 
     elsif sort_order != nil && selected_ratings == nil
-        @movies = Movie.order(sort).all
+      @movies = Movie.order(sort).all
     elsif sort_order == nil && selected_ratings != nil
-        @movies = Movie.where(:rating => params[:ratings].keys)  
+      @movies = Movie.where(:rating => params[:ratings].keys)  
     else
-        @movies = Movie.all
+      @movies = Movie.all
     end
     
-
     if params[:ratings] == nil
       params[:ratings] = Movie.MPAARatings
     end
     @all_ratings = Movie.MPAARatings.keys
     
   end
+
+  def sorted_filtered_grid
+    @movies = Movie.where(:rating => params[:ratings].keys).order(params[:sort]).all 
+  end    
 
   def new
     # default: render 'new' template
