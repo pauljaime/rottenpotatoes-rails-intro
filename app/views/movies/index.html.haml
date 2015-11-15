@@ -11,9 +11,9 @@
 %table#movies
   %thead
     %tr
-      %th{:id => 'title_header', :class => hilite_class('title') }= link_to "Movie Title", movies_path(:sort=>'title'), :id => 'title_header'
+      %th{:id => 'title_header', :class => hilite_class('title') }= link_to "Movie Title", movies_path(:sort=>'title',:ratings =>params[:ratings]), :id => 'title_header'
       %th Rating
-      %th{:id => 'release_date_header', :class => hilite_class('release_date') }= link_to "Release Date", movies_path(:sort=>'release_date'), :id => 'release_date_header'
+      %th{:id => 'release_date_header', :class => hilite_class('release_date') }= link_to "Release Date", movies_path(:sort=>'release_date',:ratings =>params[:ratings]), :id => 'release_date_header'
       %th Release Date
       %th More Info
   %tbody

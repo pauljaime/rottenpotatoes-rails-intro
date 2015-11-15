@@ -13,17 +13,36 @@ class MoviesController < ApplicationController
 
   def index
     
+    sort_order = nil
+    selected_ratings = nil
+    
     if params[:sort] != nil
-      sort = params[:sort]
-      @movies = Movie.order(sort).all
-    else
-      if params[:commit] == 'Refresh'
-        @movies = Movie.where(:rating => params[:ratings].keys)  
-      else
-        @movies = Movie.all
-      end
+      session[:sort] = params[:sort]
+      sort_order = params[:sort]
+    elsif session[:sort] != nil
+      params[:sort] = session[:sort]
+      sort_order = session[:sort]
     end
     
+    if params[:ratings] != nil
+      session[:ratings] = params[:ratings]
+      selected_ratings = params[:ratings]
+    elsif session[:ratings] != nil
+      params[:ratings] = session[:ratings]
+      selected_ratings = session[:ratings]
+    end
+    
+    if sort_order != nil && selected_ratings != nil
+        @movies = Movie.where(:rating => selected_ratings.keys).order(sort_order).all 
+    elsif sort_order != nil && selected_ratings == nil
+        @movies = Movie.order(sort).all
+    elsif sort_order == nil && selected_ratings != nil
+        @movies = Movie.where(:rating => params[:ratings].keys)  
+    else
+        @movies = Movie.all
+    end
+    
+
     if params[:ratings] == nil
       params[:ratings] = Movie.MPAARatings
     end
